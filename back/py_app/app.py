@@ -12,14 +12,21 @@ app = Flask(__name__)
 
 
 
-@app.route('/data/<string:year>/<string:month>/<string:day>/<string:hour>')
-def getData(year,month,day,hour):
+@app.route('/train-model')
+def train():
 
-    filters = request.args.get('filters')
-
-    data = model.read_data('/data')
+    model.read_data('/data')
    
-    return data.to_json()
+    return ('', 204)
+
+@app.route('/CallCenterLoadForecast/v1/<string:timestamp>')
+def predict(timestamp):
+
+    country = request.args.get('country')
+    personType = request.args.get('personType')
+    globalSegment = request.args.get('globalSegment')
+   
+    return ""
 
 
 @app.route('/_health')

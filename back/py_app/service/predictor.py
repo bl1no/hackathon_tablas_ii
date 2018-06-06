@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 
 data_file_pattern = '/*'
+data_trained_model = '/trainning/output.model'
 
 def read_data(files_path):
     files = glob.glob(files_path + data_file_pattern)
@@ -16,7 +17,9 @@ def read_data(files_path):
 
     combined_dataframes = pd.concat(list_of_processed_dataframes, ignore_index=True)
    
-    return group_by_day_hour(combined_dataframes)
+    procesed_dataframe = group_by_day_hour(combined_dataframes)
+
+    procesed_dataframe.to_csv(data_trained_model, sep='\t', encoding='utf-8')
 
 
 def clean_data(dataframe):
@@ -29,7 +32,6 @@ def group_by_day_hour(dataframe):
     dataframe['criteria'] = dataframe.start_call.apply(lambda x: datetime.strptime(x.strip(), "%Y-%m-%d %H:%M:%S").replace(microsecond=0,second=0,minute=0))
     dataframe['criteria'] = dataframe.criteria.apply(lambda x: x.strftime('%Y-%m-%d %H'))
     dataframe = dataframe.groupby(['criteria']).size().reset_index(name='count')
-    
-    return dataframe
+    return dataframe[['criteria','count']]
 
 
