@@ -3,6 +3,7 @@ import glob
 import sys
 import numpy as np
 from datetime import datetime
+import utils.utils as utils
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.linear_model import LinearRegression
 
@@ -19,7 +20,7 @@ def trainning(files_path):
         list_of_processed_dataframes.append(clean_data(data_frame))
 
     combined_dataframes = pd.concat(list_of_processed_dataframes, ignore_index=True)
-   
+
     procesed_dataframe = group_by_day_hour(combined_dataframes)
 
     procesed_dataframe.to_csv(data_trained_model, sep='\t', encoding='utf-8', index=False)
@@ -34,7 +35,7 @@ def dynamic_trainning(files_path, filters):
         list_of_processed_dataframes.append(clean_data(data_frame))
 
     combined_dataframes = pd.concat(list_of_processed_dataframes, ignore_index=True)
-   
+
     procesed_dataframe = dynamic_group_by(combined_dataframes,filters)
 
     procesed_dataframe.to_csv(data_trained_model, sep='\t', encoding='utf-8', index=False)
@@ -56,7 +57,7 @@ def dynamic_group_by(dataframe, filters):
     dataframe = dataframe[["start_call"]]
     dataframe['criteria'] = dataframe.start_call.apply(lambda x: datetime.strptime(x.strip(), "%Y-%m-%d %H:%M:%S").replace(microsecond=0,second=0,minute=0))
     dataframe['criteria'] = dataframe.criteria.apply(lambda x: x.strftime('%Y-%m-%d %H'))
-    dataframe = dataframe.groupby(['criteria']).size().reset_index(name='count')
+    dataframe = dataframe.groupby(filters + ['criteria']).size().reset_index(name='count')
     return dataframe[['criteria','count']]
 
 def predict_phoncalls_date(timestamp):
