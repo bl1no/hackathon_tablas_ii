@@ -1,7 +1,10 @@
 import pandas as pd
 import glob
 import sys
+import numpy as np
 from datetime import datetime
+from statsmodels.tsa.arima_model import ARIMA
+from sklearn.linear_model import LinearRegression
 
 data_file_pattern = '/*'
 data_trained_model = '/trainning/output.model'
@@ -19,7 +22,7 @@ def trainning(files_path):
    
     procesed_dataframe = group_by_day_hour(combined_dataframes)
 
-    procesed_dataframe.to_csv(data_trained_model, sep='\t', encoding='utf-8')
+    procesed_dataframe.to_csv(data_trained_model, sep='\t', encoding='utf-8', index=False)
 
 def dynamic_trainning(files_path, filters):
     files = glob.glob(files_path + data_file_pattern)
@@ -34,7 +37,7 @@ def dynamic_trainning(files_path, filters):
    
     procesed_dataframe = dynamic_group_by(combined_dataframes,filters)
 
-    procesed_dataframe.to_csv(data_trained_model, sep='\t', encoding='utf-8')
+    procesed_dataframe.to_csv(data_trained_model, sep='\t', encoding='utf-8', index=False)
 
 def clean_data(dataframe):
     dataframe = dataframe.drop(axis=1, index=0)
@@ -56,4 +59,12 @@ def dynamic_group_by(dataframe, filters):
     dataframe = dataframe.groupby(['criteria']).size().reset_index(name='count')
     return dataframe[['criteria','count']]
 
+def predict_phoncalls_date(timestamp):
+    dataframe = pd.read_table(data_trained_model, sep='\t', encoding='utf-8')
+    model = LinearRegression()
+    dataframe['criteria'] = dataframe.criteria.apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H').timestamp())
+
+    result = model.fit(dataframe[['criteria','count']], dataframe[['criteria','count']])
+
+    return result.to_string()
 

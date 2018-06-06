@@ -15,7 +15,7 @@ app = Flask(__name__)
 @app.route('/train-model')
 def train():
 
-    model.read_data('/data')
+    model.trainning('/data')
    
     return ('', 204)
 
@@ -26,7 +26,7 @@ def predict(timestamp):
     personType = request.args.get('personType')
     globalSegment = request.args.get('globalSegment')
    
-    return ""
+    return model.predict_phoncalls_date(timestamp)
 
 
 @app.route('/_health')
