@@ -1,10 +1,15 @@
-FROM jupyter/datascience-notebook
+FROM alpine
 
-ENV WORK_HOME /home/jovyan/work
+EXPOSE 5000
+CMD ["python", "app.py"]
+ENV ARCHFLAGS -Wno-error=unused-command-line-argument-hard-error-in-future
+RUN mkdir /code
+WORKDIR /code
+ADD ./py_app /code
 
-RUN mkdir ${WORK_HOME}/predictor
-
-RUN cd ${WORK_HOME}/predictor
-
-RUN pip install pandas numpy statsmodels matplotlib
+RUN apk add --no-cache python \
+    python-dev \
+    py-pip  gcc gfortran &&\
+    pip install --upgrade pip &&\
+    pip install -r requirements.txt
 
