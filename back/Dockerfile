@@ -1,4 +1,4 @@
-FROM alpine
+FROM python
 
 EXPOSE 5000
 CMD ["python", "app.py"]
@@ -7,9 +7,5 @@ RUN mkdir /code
 WORKDIR /code
 ADD ./py_app /code
 
-RUN apk add --no-cache python \
-    python-dev \
-    py-pip  gcc gfortran &&\
-    pip install --upgrade pip &&\
-    pip install -r requirements.txt
+RUN pip install -r requirements.txt
 

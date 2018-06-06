@@ -1,18 +1,30 @@
-from flask import Flask
+from flask import Flask, jsonify, request
+from datetime import datetime
 import os
 import socket
+import service.predictor as model
+import utils.utils as utils
 import pandas as pd
+
+
 
 app = Flask(__name__)
 
 
-@app.route('/data')
-def getData():
-    
-    data_201706 = pd.read_table('/data/201706_linea_ident.txt',  sep='|', encoding = "ISO-8859-1")
-    data_201706 = data_201706.drop(axis=1, index=0)
-    result = { "data" : data_201706.head()}
-    return result
+
+@app.route('/data/<string:year>/<string:month>/<string:day>/<string:hour>')
+def getData(year,month,day,hour):
+
+    filters = request.args.get('filters')
+
+    data = model.read_data('/data')
+   
+    return data.to_json()
+
+
+@app.route('/_health')
+def healthCheck():
+    return utils.toJson({ "up" : "ok" })
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0")
