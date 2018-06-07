@@ -76,7 +76,15 @@ def predict_phoncalls_date(timestamp):
     model = LinearRegression()
     dataframe['criteria'] = dataframe.criteria.apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H').timestamp())
 
-    result = model.fit(dataframe[['criteria','count']], dataframe[['criteria','count']])
+    train_x = dataframe.criteria[0:dataframe.size - 1000]
+    test_x = dataframe.criteria[dataframe.size - 1000: dataframe.size]
 
-    return result.to_string()
+    train_y = dataframe['count'][0:dataframe.size - 1000]
+    test_y = dataframe['count'][dataframe.size - 1000: dataframe.size]
+
+    model.fit(train_x.values.reshape(-1,1),train_y.values.reshape(-1,1))
+
+    prediction = model.predict(np.array(float(timestamp)/1000))
+
+    return str(train_y.values)
 
