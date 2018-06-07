@@ -63,7 +63,7 @@ def dynamic_group_by(dataframe, filters):
 def predict_phoncalls_date(timestamp):
     dataframe = pd.read_table(data_trained_model, sep='\t', encoding='utf-8')
     model = LinearRegression()
-    dataframe['criteria'] = dataframe.criteria.apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H').timestamp())
+    dataframe['criteria'] = dataframe.criteria.apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H").timestamp())
 
     train_x = dataframe.criteria[0:dataframe.size - 1000]
     test_x = dataframe.criteria[dataframe.size - 1000: dataframe.size]
@@ -73,7 +73,7 @@ def predict_phoncalls_date(timestamp):
 
     model.fit(train_x.values.reshape(-1,1),train_y.values.reshape(-1,1))
 
-    prediction = model.predict(np.array(float(timestamp)/1000))
+    prediction = model.predict(np.array(int(timestamp)))
 
-    return str(train_y.values)
+    return { "estimated_calls" : str(prediction[0])[10:13] }
 

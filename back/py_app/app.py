@@ -30,7 +30,7 @@ def predict(timestamp):
 
     # return trainning('/data')
 
-    return model.predict_phoncalls_date(timestamp)
+    return jsonify(model.predict_phoncalls_date(timestamp))
 
 
 @app.route('/_health')
