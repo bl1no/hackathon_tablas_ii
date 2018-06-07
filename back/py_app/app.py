@@ -5,7 +5,6 @@ import socket
 import service.predictor as model
 import utils.utils as utils
 import pandas as pd
-from service.predictor import dynamic_trainning, trainning
 
 app = Flask(__name__)
 
@@ -23,12 +22,19 @@ def predict(timestamp):
     globalSegment = request.args.get('globalSegment')
 
     if (country or personType or globalSegment):
-        list_params = [country, personType, globalSegment]
+        list_params = []
+        if (country):
+            list_params.append('country')
+        elif (personType):
+            list_params.append('personType')
+        elif (globalSegment):
+            list_params.append('globalSegment')
+
         filters = utils.convertParamToColumn(list_params)
 
-        return dynamic_trainning('/data',filters)
+        model.dynamic_trainning('/data',filters,country,personType,globalSegment)
 
-    # return trainning('/data')
+        return ('', 204)
 
     return jsonify(model.predict_phoncalls_date(timestamp))
 
