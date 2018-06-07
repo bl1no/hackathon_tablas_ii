@@ -86,5 +86,5 @@ def predict_phoncalls_date(timestamp):
 
     prediction = model.predict(np.array(int(timestamp)))
 
-    return { "estimated_calls" : str(prediction[0])[10:13] }
+    return { "estimated_calls" : str(prediction[0]) }
 
